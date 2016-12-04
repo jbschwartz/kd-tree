@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {next, segment, kd} from './KD'
-import {Point} from '@jbschwartz/geometry';
+import {BoundingBox, Point} from '@jbschwartz/geometry';
 import SVG from './SVG'
 import './index.css'
 import randoColor from './Colors'
@@ -45,24 +45,24 @@ export default class App extends Component {
       return;
     }
 
-    if(direction === 'y') {
-      let newBox = [boundingBox[0], [node.node.x, boundingBox[1][1]]];
-      let newBox2 = [[node.node.x, boundingBox[0][1]], boundingBox[1]];
+    let splitLine = {};
+    splitLine[direction] = node.node[direction];
+    const boxes = boundingBox.split(splitLine);
+
+    if(direction === 'x') {
       return (
         <g>
-          <line key={Math.random()} x1={node.node.x} y1={boundingBox[0][1]} x2={node.node.x} y2={boundingBox[1][1]} strokeWidth={2} stroke={"blue"} />
-          {this.drawLines(node.left, 'x', newBox)}
-          {this.drawLines(node.right, 'x', newBox2)}
+          <line key={Math.random()} x1={node.node.x} y1={boundingBox.min.y} x2={node.node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
+          {this.drawLines(node.left, 'y', boxes.low)}
+          {this.drawLines(node.right, 'y', boxes.high)}
         </g>
       )
     } else {
-      let newBox = [[boundingBox[0][0], node.node.y], boundingBox[1]];
-      let newBox2 = [boundingBox[0], [boundingBox[1][0] , node.node.y]];
       return (
         <g>
-          <line key={Math.random()} x1={boundingBox[0][0]} y1={node.node.y} x2={boundingBox[1][0]} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
-          {this.drawLines(node.right, 'y', newBox)}
-          {this.drawLines(node.left, 'y', newBox2)}
+          <line key={Math.random()} x1={boundingBox.min.x} y1={node.node.y} x2={boundingBox.max.x} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
+          {this.drawLines(node.left, 'x', boxes.low)}
+          {this.drawLines(node.right, 'x', boxes.high)}
         </g>
       )
     }
@@ -70,30 +70,25 @@ export default class App extends Component {
 
   drawBox(node, direction, boundingBox) {
     if(!node) {
-      const p1 = `${boundingBox[0][0]}, ${boundingBox[0][1]}`;
-      const p2 = `${boundingBox[1][0]}, ${boundingBox[0][1]}`;
-      const p3 = `${boundingBox[1][0]}, ${boundingBox[1][1]}`;
-      const p4 = `${boundingBox[0][0]}, ${boundingBox[1][1]}`;
-      const string = `${p1} ${p2} ${p3} ${p4}`
-      return <polygon points={string} fill={randoColor()} />
+      return <rect x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
     }
 
-    if(direction === 'y') {
-      let newBox = [boundingBox[0], [node.node.x, boundingBox[1][1]]];
-      let newBox2 = [[node.node.x, boundingBox[0][1]], boundingBox[1]];
+    let splitLine = {};
+    splitLine[direction] = node.node[direction];
+    const boxes = boundingBox.split(splitLine);
+
+    if(direction === 'x') {
       return (
         <g>
-          {this.drawBox(node.left, 'x', newBox)}
-          {this.drawBox(node.right, 'x', newBox2)}
+          {this.drawBox(node.left, 'y', boxes.low)}
+          {this.drawBox(node.right, 'y', boxes.high)}
         </g>
       )
     } else {
-      let newBox = [[boundingBox[0][0], node.node.y], boundingBox[1]];
-      let newBox2 = [boundingBox[0], [boundingBox[1][0] , node.node.y]];
       return (
         <g>
-          {this.drawBox(node.right, 'y', newBox)}
-          {this.drawBox(node.left, 'y', newBox2)}
+          {this.drawBox(node.left, 'x', boxes.low)}
+          {this.drawBox(node.right, 'x', boxes.high)}
         </g>
       )
     }
@@ -104,10 +99,11 @@ export default class App extends Component {
       return <circle key={index} cx={point.x} cy={point.y} r={3} />
     });
 
-    const output2 = this.drawLines(this.tree, 'y', [[0, 0], [1000,1000]]);
-    const output3 = this.drawBox(this.tree, 'y', [[0, 0], [1000,1000]]);
+    let boundingBox = new BoundingBox(new Point(0, 0), new Point(1000, 1000));
 
-    console.log(this.tree.node.x);
+    const output2 = this.drawLines(this.tree, 'x', boundingBox);
+    const output3 = this.drawBox(this.tree, 'x', boundingBox);
+
     return (
       <div className="App">
         <SVG onClick={null}>
