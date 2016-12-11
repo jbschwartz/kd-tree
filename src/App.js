@@ -5,17 +5,25 @@ import SVG from './SVG'
 import './index.css'
 import randoColor from './Colors'
 
+function randomPoint(boundingBox) {
+
+  var randomInteger = (min, max) => Math.floor(Math.random() * (max - min) + min);
+
+  return new Point(
+    randomInteger(boundingBox.min.x, boundingBox.max.x),
+    randomInteger(boundingBox.min.y, boundingBox.max.y)
+  );
+}
+
 export default class App extends Component {
   constructor(props) {
     super(props)
 
+    this.canvas = new BoundingBox(new Point(0, 0), new Point(1000, 1000));
     this.points = []
 
-    var f = () => Math.floor(Math.random()*1000)
+    for(var i = 0; i < 100; ++i) this.points.push(randomPoint(this.canvas));
 
-    for(var i = 0; i < 100; ++i) {
-      this.points.push(new Point(f(), f()));
-    }
     this.tree = kd(this.points);
   }
 
@@ -55,9 +63,7 @@ export default class App extends Component {
       return <circle key={index} cx={point.x} cy={point.y} r={3} />
     });
 
-    let boundingBox = new BoundingBox(new Point(0, 0), new Point(1000, 1000));
-
-    this.drawLines(this.tree, 'x', boundingBox);
+    this.drawLines(this.tree, 'x', this.canvas);
 
     return (
       <div className="App">
