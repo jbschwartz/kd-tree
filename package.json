@@ -2,6 +2,7 @@
   "name": "kd-tree",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/kd-tree",
   "devDependencies": {
     "react-scripts": "0.7.0"
   },
