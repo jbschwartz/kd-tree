@@ -9,18 +9,13 @@ export default class App extends Component {
   constructor(props) {
     super(props)
 
-    const p0 = new Point(861, 13);
-    const p1 = new Point(809, 49);
-    const p2 = new Point(984, 839);
-    const p3 = new Point(332, 921);
-    const p4 = new Point(959, 194);
-    const p5 = new Point(644, 301);
-    const p6 = new Point(897, 548);
-    const p7 = new Point(825, 561);
-    const p8 = new Point(254, 356);
-    const p9 = new Point(699, 703);
+    this.points = []
 
-    this.points = [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9];
+    var f = () => Math.floor(Math.random()*1000)
+
+    for(var i = 0; i < 100; ++i) {
+      this.points.push(new Point(f(), f()));
+    }
     this.tree = kd(this.points);
   }
 
