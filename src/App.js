@@ -5,22 +5,6 @@ import SVG from './SVG'
 import './index.css'
 import randoColor from './Colors'
 
-function printTree(tree) {
-  console.log(`(${tree.node.x}, ${tree.node.y})`);
-  let node = tree.node;
-  let children = [tree.left, tree.right];
-  while(true) {
-    if(children.length == 0) break;
-    let newChildren = []
-    children.forEach(child => {
-      console.log(`(${child.node.x}, ${child.node.y})`);
-      if(child.left) newChildren.push(child.left);
-      if(child.right) newChildren.push(child.right);
-    })
-    children = newChildren;
-  }
-}
-
 export default class App extends Component {
   constructor(props) {
     super(props)
