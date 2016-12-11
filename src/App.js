@@ -33,6 +33,10 @@ export default class App extends Component {
         <rect key={"cell_" + this.cells.length} x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
       )
       return;
+    } else {
+      this.dots.push(
+        <circle key={this.dots.length} cx={node.node.x} cy={node.node.y} r={3} />
+      )
     }
 
     let splitLine = {};
@@ -57,11 +61,8 @@ export default class App extends Component {
 
   render() {
     this.lines = [];
+    this.dots = [];
     this.cells = [];
-
-    const output = this.points.map((point, index) => {
-      return <circle key={index} cx={point.x} cy={point.y} r={3} />
-    });
 
     this.drawLines(this.tree, 'x', this.canvas);
 
@@ -70,7 +71,7 @@ export default class App extends Component {
         <SVG onClick={null}>
           {this.cells}
           {this.lines}
-          {output}
+          {this.dots}
         </SVG>
       </div>
     );
