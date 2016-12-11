@@ -22,7 +22,7 @@ export default class App extends Component {
   drawLines(node, direction, boundingBox) {
     if(!node) {
       this.cells.push(
-        <rect x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
+        <rect key={"cell_" + this.cells.length} x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
       )
       return;
     }
@@ -33,11 +33,11 @@ export default class App extends Component {
 
     if(direction === 'x') {
       this.lines.push(
-        <line key={Math.random()} x1={node.node.x} y1={boundingBox.min.y} x2={node.node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
+        <line key={"line_" + this.lines.length} x1={node.node.x} y1={boundingBox.min.y} x2={node.node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
       )
     } else {
       this.lines.push(
-        <line key={Math.random()} x1={boundingBox.min.x} y1={node.node.y} x2={boundingBox.max.x} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
+        <line key={"line_" + this.lines.length} x1={boundingBox.min.x} y1={node.node.y} x2={boundingBox.max.x} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
       )
     }
 
