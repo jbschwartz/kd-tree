@@ -21,6 +21,9 @@ export default class App extends Component {
 
   drawLines(node, direction, boundingBox) {
     if(!node) {
+      this.cells.push(
+        <rect x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
+      )
       return;
     }
 
@@ -45,34 +48,9 @@ export default class App extends Component {
     }
   }
 
-  drawBox(node, direction, boundingBox) {
-    if(!node) {
-      return <rect x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
-    }
-
-    let splitLine = {};
-    splitLine[direction] = node.node[direction];
-    const boxes = boundingBox.split(splitLine);
-
-    if(direction === 'x') {
-      return (
-        <g>
-          {this.drawBox(node.left, 'y', boxes.low)}
-          {this.drawBox(node.right, 'y', boxes.high)}
-        </g>
-      )
-    } else {
-      return (
-        <g>
-          {this.drawBox(node.left, 'x', boxes.low)}
-          {this.drawBox(node.right, 'x', boxes.high)}
-        </g>
-      )
-    }
-  }
-
   render() {
     this.lines = [];
+    this.cells = [];
 
     const output = this.points.map((point, index) => {
       return <circle key={index} cx={point.x} cy={point.y} r={3} />
@@ -81,12 +59,11 @@ export default class App extends Component {
     let boundingBox = new BoundingBox(new Point(0, 0), new Point(1000, 1000));
 
     this.drawLines(this.tree, 'x', boundingBox);
-    const output3 = this.drawBox(this.tree, 'x', boundingBox);
 
     return (
       <div className="App">
         <SVG onClick={null}>
-          {output3}
+          {this.cells}
           {this.lines}
           {output}
         </SVG>
