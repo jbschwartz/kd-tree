@@ -27,15 +27,15 @@ export default class App extends Component {
     this.tree = kd(this.points);
   }
 
-  drawLines(node, direction, boundingBox) {
+  generateGeometry(node, direction, boundingBox) {
     if(!node) {
-      this.cells.push(
-        <rect key={"cell_" + this.cells.length} x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
+      this.geometry.cells.push(
+        <rect key={"cell_" + this.geometry.cells.length} x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
       )
       return;
     } else {
-      this.dots.push(
-        <circle key={this.dots.length} cx={node.node.x} cy={node.node.y} r={3} />
+      this.geometry.dots.push(
+        <circle key={this.geometry.dots.length} cx={node.node.x} cy={node.node.y} r={3} />
       )
     }
 
@@ -44,34 +44,31 @@ export default class App extends Component {
     const boxes = boundingBox.split(splitLine);
 
     if(direction === 'x') {
-      this.lines.push(
-        <line key={"line_" + this.lines.length} x1={node.node.x} y1={boundingBox.min.y} x2={node.node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
+      this.geometry.lines.push(
+        <line key={"line_" + this.geometry.lines.length} x1={node.node.x} y1={boundingBox.min.y} x2={node.node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
       )
     } else {
-      this.lines.push(
-        <line key={"line_" + this.lines.length} x1={boundingBox.min.x} y1={node.node.y} x2={boundingBox.max.x} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
+      this.geometry.lines.push(
+        <line key={"line_" + this.geometry.lines.length} x1={boundingBox.min.x} y1={node.node.y} x2={boundingBox.max.x} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
       )
     }
 
     const newDirection = (direction == 'x') ? 'y' : 'x';
 
-    this.drawLines(node.left, newDirection, boxes.low);
-    this.drawLines(node.right, newDirection, boxes.high);
+    this.generateGeometry(node.left, newDirection, boxes.low);
+    this.generateGeometry(node.right, newDirection, boxes.high);
   }
 
   render() {
-    this.lines = [];
-    this.dots = [];
-    this.cells = [];
-
-    this.drawLines(this.tree, 'x', this.canvas);
+    this.geometry = { lines: [], dots: [], cells: [] }
+    this.generateGeometry(this.tree, 'x', this.canvas);
 
     return (
       <div className="App">
         <SVG onClick={null}>
-          {this.cells}
-          {this.lines}
-          {this.dots}
+          {this.geometry.cells}
+          {this.geometry.lines}
+          {this.geometry.dots}
         </SVG>
       </div>
     );
