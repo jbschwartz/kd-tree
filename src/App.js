@@ -35,17 +35,16 @@ export default class App extends Component {
       this.lines.push(
         <line key={Math.random()} x1={node.node.x} y1={boundingBox.min.y} x2={node.node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
       )
-
-      this.drawLines(node.left, 'y', boxes.low);
-      this.drawLines(node.right, 'y', boxes.high);
     } else {
       this.lines.push(
         <line key={Math.random()} x1={boundingBox.min.x} y1={node.node.y} x2={boundingBox.max.x} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
       )
-
-      this.drawLines(node.left, 'x', boxes.low);
-      this.drawLines(node.right, 'x', boxes.high);
     }
+
+    const newDirection = (direction == 'x') ? 'y' : 'x';
+
+    this.drawLines(node.left, newDirection, boxes.low);
+    this.drawLines(node.right, newDirection, boxes.high);
   }
 
   render() {
