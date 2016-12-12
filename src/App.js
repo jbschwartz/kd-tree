@@ -32,27 +32,36 @@ export default class App extends Component {
         <rect key={"cell_" + this.geometry.cells.length} x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
       )
       return;
-    } else {
-      this.geometry.dots.push(
-        <circle key={this.geometry.dots.length} cx={node.x} cy={node.y} r={3} />
-      )
     }
 
-    let splitLine = {};
-    splitLine[direction] = node[direction];
-    const boxes = boundingBox.split(splitLine);
+    this.geometry.dots.push(<circle key={this.geometry.dots.length} cx={node.x} cy={node.y} r={3} />)
 
+    const boxes = boundingBox.split({
+      direction: node[direction]
+    });
+
+    let line, newDirection;
     if(direction === 'x') {
-      this.geometry.lines.push(
-        <line key={"line_" + this.geometry.lines.length} x1={node.x} y1={boundingBox.min.y} x2={node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
-      )
+      newDirection = 'y';
+      line = {
+        x1: node.x,
+        x2: node.x,
+        y1: boundingBox.min.y,
+        y2: boundingBox.max.y,
+        stroke: "blue"
+      };
     } else {
-      this.geometry.lines.push(
-        <line key={"line_" + this.geometry.lines.length} x1={boundingBox.min.x} y1={node.y} x2={boundingBox.max.x} y2={node.y} strokeWidth={2} stroke={"red"}/>
-      )
+      newDirection = 'x';
+      line = {
+        x1: boundingBox.min.x,
+        x2: boundingBox.max.x,
+        y1: node.y,
+        y2: node.y,
+        stroke: "red"
+      }
     }
 
-    const newDirection = (direction == 'x') ? 'y' : 'x';
+    this.geometry.lines.push(<line key={"line_" + this.geometry.lines.length} {... line} strokeWidth={2} />)
 
     this.generateGeometry(node.left, newDirection, boxes.low);
     this.generateGeometry(node.right, newDirection, boxes.high);
