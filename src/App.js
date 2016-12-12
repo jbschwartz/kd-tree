@@ -21,9 +21,16 @@ export default class App extends Component {
     this.canvas = new BoundingBox(new Point(0, 0), new Point(1000, 1000));
     this.points = []
 
+    this.state = {
+      searchPoint: randomPoint(this.canvas)
+    }
+
     for(var i = 0; i < 100; ++i) this.points.push(randomPoint(this.canvas));
 
     this.tree = new KDTree(this.points);
+
+    this.geometry = { lines: [], dots: [], cells: [] }
+    this.generateGeometry(this.tree.root, this.canvas);
   }
 
   generateGeometry(node, boundingBox) {
@@ -65,16 +72,24 @@ export default class App extends Component {
     this.generateGeometry(node.right, boxes.high);
   }
 
+  setSearchPoint(point) {
+    this.setState({
+      searchPoint: new Point(point.x, point.y)
+    })
+  }
+
   render() {
-    this.geometry = { lines: [], dots: [], cells: [] }
-    this.generateGeometry(this.tree.root, this.canvas);
+    const neighbor = this.tree.nearestNeighbor(this.state.searchPoint);
+    const distanceToNeighbor = neighbor.distanceTo(this.state.searchPoint);
 
     return (
       <div className="App">
-        <SVG onClick={null}>
+        <SVG onClick={this.setSearchPoint.bind(this)}>
           {this.geometry.cells}
           {this.geometry.lines}
           {this.geometry.dots}
+          <circle cx={this.state.searchPoint.x} cy={this.state.searchPoint.y} r={5} fill={"green"} />
+          <circle cx={this.state.searchPoint.x} cy={this.state.searchPoint.y} r={distanceToNeighbor} strokeWidth={1} fill={'none'} stroke={"green"} />
         </SVG>
       </div>
     );
