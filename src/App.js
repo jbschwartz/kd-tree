@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import {next, segment, kd} from './KD'
-import {BoundingBox, Point} from '@jbschwartz/geometry';
+import { BoundingBox, KDTree, Point } from '@jbschwartz/geometry';
 import SVG from './SVG'
 import './index.css'
 import randoColor from './Colors'
@@ -24,7 +23,7 @@ export default class App extends Component {
 
     for(var i = 0; i < 100; ++i) this.points.push(randomPoint(this.canvas));
 
-    this.tree = kd(this.points);
+    this.tree = new KDTree(this.points);
   }
 
   generateGeometry(node, direction, boundingBox) {
@@ -35,21 +34,21 @@ export default class App extends Component {
       return;
     } else {
       this.geometry.dots.push(
-        <circle key={this.geometry.dots.length} cx={node.node.x} cy={node.node.y} r={3} />
+        <circle key={this.geometry.dots.length} cx={node.x} cy={node.y} r={3} />
       )
     }
 
     let splitLine = {};
-    splitLine[direction] = node.node[direction];
+    splitLine[direction] = node[direction];
     const boxes = boundingBox.split(splitLine);
 
     if(direction === 'x') {
       this.geometry.lines.push(
-        <line key={"line_" + this.geometry.lines.length} x1={node.node.x} y1={boundingBox.min.y} x2={node.node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
+        <line key={"line_" + this.geometry.lines.length} x1={node.x} y1={boundingBox.min.y} x2={node.x} y2={boundingBox.max.y} strokeWidth={2} stroke={"blue"} />
       )
     } else {
       this.geometry.lines.push(
-        <line key={"line_" + this.geometry.lines.length} x1={boundingBox.min.x} y1={node.node.y} x2={boundingBox.max.x} y2={node.node.y} strokeWidth={2} stroke={"red"}/>
+        <line key={"line_" + this.geometry.lines.length} x1={boundingBox.min.x} y1={node.y} x2={boundingBox.max.x} y2={node.y} strokeWidth={2} stroke={"red"}/>
       )
     }
 
@@ -61,7 +60,7 @@ export default class App extends Component {
 
   render() {
     this.geometry = { lines: [], dots: [], cells: [] }
-    this.generateGeometry(this.tree, 'x', this.canvas);
+    this.generateGeometry(this.tree.root, 'x', this.canvas);
 
     return (
       <div className="App">
