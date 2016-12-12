@@ -26,7 +26,7 @@ export default class App extends Component {
     this.tree = new KDTree(this.points);
   }
 
-  generateGeometry(node, direction, boundingBox) {
+  generateGeometry(node, boundingBox) {
     if(!node) {
       this.geometry.cells.push(
         <rect key={"cell_" + this.geometry.cells.length} x={boundingBox.min.x} y={boundingBox.min.y} width={boundingBox.width} height={boundingBox.height} fill={randoColor()} />
@@ -36,13 +36,12 @@ export default class App extends Component {
 
     this.geometry.dots.push(<circle key={this.geometry.dots.length} cx={node.x} cy={node.y} r={3} />)
 
-    const boxes = boundingBox.split({
-      direction: node[direction]
-    });
+    let splitLine = {};
+    splitLine[node.direction] = node[node.direction];
+    const boxes = boundingBox.split(splitLine);
 
-    let line, newDirection;
-    if(direction === 'x') {
-      newDirection = 'y';
+    let line;
+    if(node.direction === 'x') {
       line = {
         x1: node.x,
         x2: node.x,
@@ -51,7 +50,6 @@ export default class App extends Component {
         stroke: "blue"
       };
     } else {
-      newDirection = 'x';
       line = {
         x1: boundingBox.min.x,
         x2: boundingBox.max.x,
@@ -63,13 +61,13 @@ export default class App extends Component {
 
     this.geometry.lines.push(<line key={"line_" + this.geometry.lines.length} {... line} strokeWidth={2} />)
 
-    this.generateGeometry(node.left, newDirection, boxes.low);
-    this.generateGeometry(node.right, newDirection, boxes.high);
+    this.generateGeometry(node.left, boxes.low);
+    this.generateGeometry(node.right, boxes.high);
   }
 
   render() {
     this.geometry = { lines: [], dots: [], cells: [] }
-    this.generateGeometry(this.tree.root, 'x', this.canvas);
+    this.generateGeometry(this.tree.root, this.canvas);
 
     return (
       <div className="App">
