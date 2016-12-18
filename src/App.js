@@ -1,18 +1,8 @@
 import React, { Component } from 'react';
-import { BoundingBox, KDTree, Point } from '@jbschwartz/geometry';
+import { BoundingBox, KDTree, Point, Utils } from '@jbschwartz/geometry';
 import SVG from './SVG'
 import './index.css'
 import randoColor from './Colors'
-
-function randomPoint(boundingBox) {
-
-  var randomInteger = (min, max) => Math.floor(Math.random() * (max - min) + min);
-
-  return new Point(
-    randomInteger(boundingBox.min.x, boundingBox.max.x),
-    randomInteger(boundingBox.min.y, boundingBox.max.y)
-  );
-}
 
 export default class App extends Component {
   constructor(props) {
@@ -22,10 +12,10 @@ export default class App extends Component {
     this.points = []
 
     this.state = {
-      searchPoint: randomPoint(this.canvas)
+      searchPoint: Utils.randomPoint(this.canvas)
     }
 
-    for(var i = 0; i < 100; ++i) this.points.push(randomPoint(this.canvas));
+    for(var i = 0; i < 100; ++i) this.points.push(Utils.randomPoint(this.canvas));
 
     this.tree = new KDTree(this.points);
 
@@ -79,7 +69,7 @@ export default class App extends Component {
   }
 
   render() {
-    const neighbor = this.tree.nearestNeighbor(this.state.searchPoint);
+    const neighbor = this.tree.nearestNeighbors(this.state.searchPoint)[0];
     const distanceToNeighbor = neighbor.distanceTo(this.state.searchPoint);
 
     return (
